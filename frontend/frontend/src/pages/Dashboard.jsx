@@ -7,8 +7,7 @@ import PdfUploadForm from '../components/PdfUploadForm';
 import YoutubeShareForm from '../components/YoutubeShareForm';
 import ResourceFeed from '../components/ResourceFeed';
 import { 
-  FileText, Heart, Download, 
-  ArrowUpRight, Sparkles, BookOpen, Clock 
+  Sparkles, Clock, Sunrise, Sun, Moon
 } from 'lucide-react';
 
 const Youtube = (props) => (
@@ -20,20 +19,29 @@ const Youtube = (props) => (
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { resources } = useResources();
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Calculate quick metrics based on current resources database state
-  const totalPdfs = resources.filter(r => r.type === 'pdf').length;
-  const totalYoutubes = resources.filter(r => r.type === 'youtube').length;
-  const totalLikes = resources.reduce((acc, curr) => acc + (curr.likes || 0), 0);
-  const totalDownloads = resources.reduce((acc, curr) => acc + (curr.downloadCount || 0), 0);
-
-  const getGreeting = () => {
+  const getGreetingConfig = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) {
+      return {
+        text: 'Good Morning',
+        icon: <Sunrise className="w-4.5 h-4.5 text-amber-500" />,
+        bg: 'bg-amber-500/10'
+      };
+    }
+    if (hour < 17) {
+      return {
+        text: 'Good Afternoon',
+        icon: <Sun className="w-4.5 h-4.5 text-amber-500" />,
+        bg: 'bg-amber-500/10'
+      };
+    }
+    return {
+      text: 'Good Evening',
+      icon: <Moon className="w-4.5 h-4.5 text-indigo-500 dark:text-indigo-400" />,
+      bg: 'bg-indigo-500/10'
+    };
   };
 
   const getFormattedDate = () => {
@@ -44,106 +52,55 @@ const Dashboard = () => {
     });
   };
 
+  const greetingConfig = getGreetingConfig();
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950/60 transition-colors flex flex-col justify-between pt-16">
       {/* Global Navbar */}
       <Navbar onSearchChange={setSearchQuery} />
 
       {/* Main Content Workspace */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-12">
         
-        {/* Welcome Dashboard Banner Header */}
-        <section className="relative glass-panel border rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-fade-in">
-          {/* Decorative gradients */}
-          <div className="absolute right-0 top-0 w-60 h-60 bg-gradient-to-br from-brand-500/20 to-indigo-500/20 rounded-full blur-3xl -z-10 pointer-events-none" />
-          
-          <div className="flex items-center gap-4">
-            <div className="relative">
+        {/* Minimal Greeting Header */}
+        <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="relative group">
               <img
                 src={user?.avatar || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=user'}
                 alt={user?.name || 'User'}
-                className="w-16 h-16 rounded-2xl border-2 border-brand-500/30 bg-slate-50 dark:bg-slate-900 object-cover shadow-sm"
+                className="w-12 h-12 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 object-cover shadow-sm group-hover:scale-105 transition-transform duration-300"
               />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-brand-500 rounded-full flex items-center justify-center text-white border border-white dark:border-slate-950">
-                <Sparkles className="w-3 h-3 fill-current" />
-              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-50 dark:border-slate-950" />
             </div>
             
-            <div className="leading-tight">
-              <p className="text-xs text-slate-400 font-bold flex items-center gap-1.5 uppercase tracking-wider">
-                <Clock className="w-3 h-3 text-slate-400" />
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="font-heading font-bold text-xl md:text-2xl text-slate-800 dark:text-slate-100 leading-tight">
+                  {greetingConfig.text}, {user?.name}!
+                </h2>
+                <div className={`p-1.5 rounded-lg ${greetingConfig.bg} flex items-center justify-center`}>
+                  {greetingConfig.icon}
+                </div>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
                 {getFormattedDate()}
-              </p>
-              <h2 className="font-heading font-extrabold text-2xl md:text-3xl text-slate-800 dark:text-slate-100 mt-1">
-                {getGreeting()}, {user?.name}!
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Check out the latest reference notes and educational videos shared today.
               </p>
             </div>
           </div>
 
-          <div className="px-4 py-2 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-600 dark:text-brand-400 text-xs font-bold flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-brand-600 dark:bg-brand-400 animate-pulse" />
+          {/* Connected workspace pill */}
+          <div className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Workspace Connected
           </div>
         </section>
 
-        {/* Statistics Panels Grid */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {/* Stat 1 */}
-          <div className="glass-panel border rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
-            <div className="space-y-1.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">PDF Notes</span>
-              <h3 className="font-heading font-extrabold text-2xl text-slate-800 dark:text-slate-100">{totalPdfs}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center">
-              <FileText className="w-5 h-5" />
-            </div>
-          </div>
-
-          {/* Stat 2 */}
-          <div className="glass-panel border rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
-            <div className="space-y-1.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Videos</span>
-              <h3 className="font-heading font-extrabold text-2xl text-slate-800 dark:text-slate-100">{totalYoutubes}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 flex items-center justify-center">
-              <Youtube className="w-5 h-5 animate-pulse" />
-            </div>
-          </div>
-
-          {/* Stat 3 */}
-          <div className="glass-panel border rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
-            <div className="space-y-1.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Likes</span>
-              <h3 className="font-heading font-extrabold text-2xl text-slate-800 dark:text-slate-100">{totalLikes}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center">
-              <Heart className="w-5 h-5 fill-current" />
-            </div>
-          </div>
-
-          {/* Stat 4 */}
-          <div className="glass-panel border rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
-            <div className="space-y-1.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Downloads</span>
-              <h3 className="font-heading font-extrabold text-2xl text-slate-800 dark:text-slate-100">{totalDownloads}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-brand-50/60 dark:bg-brand-950/40 text-brand-600 flex items-center justify-center">
-              <Download className="w-5 h-5" />
-            </div>
-          </div>
-        </section>
-
         {/* Upload Panels Side-By-Side */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          <div className="h-full">
-            <PdfUploadForm />
-          </div>
-          <div className="h-full">
-            <YoutubeShareForm />
-          </div>
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
+          <PdfUploadForm />
+          <YoutubeShareForm />
         </section>
 
         {/* Search Results indicator */}

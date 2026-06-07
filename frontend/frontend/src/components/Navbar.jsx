@@ -93,10 +93,10 @@ const Navbar = ({ onSearchChange }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">
+            <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/10">
               <BookOpen className="w-5 h-5" />
             </div>
-            <span className="font-heading font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-600 to-indigo-500 dark:from-brand-500 dark:to-indigo-400 bg-clip-text text-transparent">
+            <span className="font-heading font-extrabold text-xl tracking-tight text-brand-600 dark:text-brand-400">
               NoteSharing
             </span>
           </Link>

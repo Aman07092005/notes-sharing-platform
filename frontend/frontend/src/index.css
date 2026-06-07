@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', sans-serif;
   --font-heading: 'Outfit', sans-serif;
@@ -13,20 +15,20 @@
   --color-brand-700: #4338ca;
   --color-brand-900: #312e81;
   
-  --color-glass-light: rgba(255, 255, 255, 0.45);
+  --color-glass-light: rgba(255, 255, 255, 0.95);
   --color-glass-dark: rgba(15, 23, 42, 0.45);
-  --color-border-light: rgba(255, 255, 255, 0.2);
+  --color-border-light: rgba(226, 232, 240, 0.9);
   --color-border-dark: rgba(255, 255, 255, 0.05);
 
-  --animate-shimmer: shimmer 2s infinite linear;
+  --animate-shimmer: shimmer 1.5s infinite ease-in-out;
   --animate-float: float 6s ease-in-out infinite;
   --animate-fade-in: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-slide-up: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-shake: shake 0.4s ease-in-out;
 
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
   }
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
@@ -85,40 +87,34 @@ h1, h2, h3, h4, h5, h6 {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border-light);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 
 .dark .glass-panel {
   background: var(--color-glass-dark);
   border: 1px solid var(--color-border-dark);
+  box-shadow: none;
 }
 
 .glass-nav {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--color-border-light);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
 }
 
 .dark .glass-nav {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.85);
   border-bottom: 1px solid var(--color-border-dark);
+  box-shadow: none;
 }
 
 /* Shimmer background animation details */
 .shimmer-bg {
-  background: linear-gradient(90deg, 
-    rgba(226, 232, 240, 0.4) 25%, 
-    rgba(203, 213, 225, 0.8) 50%, 
-    rgba(226, 232, 240, 0.4) 75%
-  );
-  background-size: 200% 100%;
+  background: #e2e8f0;
 }
 
 .dark .shimmer-bg {
-  background: linear-gradient(90deg, 
-    rgba(30, 41, 59, 0.4) 25%, 
-    rgba(51, 65, 85, 0.8) 50%, 
-    rgba(30, 41, 59, 0.4) 75%
-  );
-  background-size: 200% 100%;
+  background: #1e293b;
 }

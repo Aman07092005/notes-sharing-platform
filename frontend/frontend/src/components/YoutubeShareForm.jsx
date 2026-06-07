@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useResources } from '../context/ResourceContext';
 import { useToast } from '../context/ToastContext';
-import { Video, Link as LinkIcon, ArrowRight, Play } from 'lucide-react';
+import { Video, Link as LinkIcon, ArrowRight, Play, Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Youtube = (props) => (
   <svg viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className={props.className}>
@@ -18,6 +19,7 @@ const YoutubeShareForm = () => {
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
   const [videoId, setVideoId] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Validate YouTube URL and extract ID in real-time
   useEffect(() => {
@@ -66,103 +68,127 @@ const YoutubeShareForm = () => {
   };
 
   return (
-    <div className="glass-panel border rounded-2xl p-6 shadow-md transition-all h-full flex flex-col justify-between">
-      <div>
-        <div className="flex items-center gap-2 mb-4">
+    <div className="glass-panel border rounded-2xl p-5 shadow-md transition-all flex flex-col justify-between">
+      <div 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center justify-between cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-950 flex items-center justify-center text-rose-600 dark:text-rose-400">
             <Youtube className="w-4.5 h-4.5" />
           </div>
           <h3 className="font-heading font-bold text-lg dark:text-slate-100">Share YouTube Video</h3>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-              Resource Title
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Tailwind CSS v4 Crash Course"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-slate-100"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-              Description (Optional)
-            </label>
-            <textarea
-              placeholder="Explain what concepts are explained in this video tutorial..."
-              rows={2}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-slate-100 resize-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-              YouTube Video URL
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="https://www.youtube.com/watch?v=..."
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-slate-100"
-                required
-              />
-              <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-            </div>
-          </div>
-
-          {/* Live Thumbnail Preview */}
-          {videoId ? (
-            <div className="space-y-1.5 animate-fade-in">
-              <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Live Video Preview
-              </span>
-              <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm aspect-video bg-black group">
-                <img
-                  src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
-                  alt="Video Thumbnail"
-                  className="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-slate-900/20 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-rose-600/90 text-white flex items-center justify-center shadow-lg transition-transform duration-250 group-hover:scale-110">
-                    <Play className="w-5 h-5 fill-current ml-0.5" />
-                  </div>
-                </div>
-                <div className="absolute top-2 left-2 px-2 py-0.5 bg-rose-600 text-[10px] text-white font-extrabold uppercase rounded tracking-wider flex items-center gap-1">
-                  <Youtube className="w-3.5 h-3.5" />
-                  Live Preview
-                </div>
-              </div>
-            </div>
-          ) : url.trim() && !videoId ? (
-            <div className="flex items-center gap-2 text-rose-500 text-xs mt-1 animate-pulse">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-              Please enter a valid YouTube link (e.g. https://www.youtube.com/watch?v=...)
-            </div>
-          ) : null}
-        </form>
-      </div>
-
-      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
         <button
           type="button"
-          onClick={handleSubmit}
-          disabled={!videoId || !title.trim()}
-          className="w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:bg-slate-200 dark:disabled:bg-slate-900 disabled:text-slate-400 dark:disabled:text-slate-600 text-white font-semibold text-sm transition-all shadow-md shadow-brand-500/10 flex items-center justify-center gap-2"
+          className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-all"
+          aria-label={isExpanded ? "Collapse YouTube form" : "Expand YouTube form"}
         >
-          Share Resource
-          <ArrowRight className="w-4.5 h-4.5" />
+          <Plus className={`w-5 h-5 transform transition-transform duration-300 ${isExpanded ? 'rotate-45' : ''}`} />
         </button>
       </div>
+
+      <AnimatePresence initial={false}>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="pt-5 flex flex-col justify-between h-full">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                      Resource Title
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Tailwind CSS v4 Crash Course"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full px-4 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-slate-100"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                      Description (Optional)
+                    </label>
+                    <textarea
+                      placeholder="Explain what concepts are explained in this video tutorial..."
+                      rows={2}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full px-4 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-slate-100 resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                      YouTube Video URL
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-slate-100"
+                        required
+                      />
+                      <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                    </div>
+                  </div>
+
+                  {/* Live Thumbnail Preview */}
+                  {videoId ? (
+                    <div className="space-y-1.5 animate-fade-in">
+                      <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Live Video Preview
+                      </span>
+                      <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm aspect-video bg-black group">
+                        <img
+                          src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                          alt="Video Thumbnail"
+                          className="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-slate-900/20 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-full bg-rose-600/90 text-white flex items-center justify-center shadow-lg transition-transform duration-250 group-hover:scale-110">
+                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                          </div>
+                        </div>
+                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-rose-600 text-[10px] text-white font-extrabold uppercase rounded tracking-wider flex items-center gap-1">
+                          <Youtube className="w-3.5 h-3.5" />
+                          Live Preview
+                        </div>
+                      </div>
+                    </div>
+                  ) : url.trim() && !videoId ? (
+                    <div className="flex items-center gap-2 text-rose-500 text-xs mt-1 animate-pulse">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                      Please enter a valid YouTube link (e.g. https://www.youtube.com/watch?v=...)
+                    </div>
+                  ) : null}
+                </form>
+
+                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={!videoId || !title.trim()}
+                    className="w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:bg-slate-200 dark:disabled:bg-slate-900 disabled:text-slate-400 dark:disabled:text-slate-600 text-white font-semibold text-sm transition-all shadow-md shadow-brand-500/10 flex items-center justify-center gap-2"
+                  >
+                    Share Resource
+                    <ArrowRight className="w-4.5 h-4.5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
     </div>
   );
 };

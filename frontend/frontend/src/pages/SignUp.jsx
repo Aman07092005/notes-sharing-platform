@@ -110,7 +110,7 @@ const SignUp = () => {
       <div className="relative w-full max-w-lg glass-panel border rounded-3xl shadow-2xl p-8 md:p-10 animate-slide-up">
         {/* Header Title */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white font-bold mb-4 shadow-lg shadow-brand-500/20">
+          <div className="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white font-bold mb-4 shadow-lg shadow-brand-500/10">
             <BookOpen className="w-6 h-6" />
           </div>
           <h2 className="font-heading font-extrabold text-2xl md:text-3xl text-slate-800 dark:text-slate-100">

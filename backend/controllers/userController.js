@@ -45,18 +45,20 @@ try {
 };
 
 exports.getUserPosts = async (req, res) => {
-try {
-
+  try {
     const posts = await Post.find({
-        owner: req.params.id
+      owner: req.params.id,
     })
-    .sort({ createdAt: -1 });
+      .populate(
+        "owner",
+        "username avatar"
+      )
+      .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
-
-} catch (error) {
+  } catch (error) {
     res.status(500).json({
-        message: error.message
+      message: error.message,
     });
-}
+  }
 };

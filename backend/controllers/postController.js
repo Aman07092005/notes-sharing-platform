@@ -17,7 +17,7 @@ try {
     }
 
     const posts = await Post.find(filter)
-        .populate("owner", "username email")
+        .populate("owner", "username email avatar")
         .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
@@ -32,7 +32,7 @@ try {
 exports.getPostById = async (req, res) => {
 try {
     const post = await Post.findById(req.params.id)
-        .populate("owner", "username email")
+        .populate("owner", "username email avatar")
 
     if (!post) {
         return res.status(404).json({
@@ -66,11 +66,54 @@ try {
 
     const allowedTypes = ["pdf", "youtube", "link"];
 
-    if (!allowedTypes.includes(resourceType)){
+if (!allowedTypes.includes(resourceType)) {
+    return res.status(400).json({
+        message: "Invalid resource type"
+    });
+}
+
+// Check valid URL
+try {
+    new URL(url);
+} catch {
+    return res.status(400).json({
+        message: "Invalid URL"
+    });
+}
+
+const youtubeRegex =
+    /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/i;
+
+const pdfRegex =
+    /\.pdf(\?.*)?$/i;
+
+if (resourceType === "youtube") {
+    if (!youtubeRegex.test(url)) {
         return res.status(400).json({
-            message: "Invalid resource type"
+            message: "Please provide a valid YouTube URL"
         });
     }
+}
+
+if (resourceType === "pdf") {
+    if (!pdfRegex.test(url)) {
+        return res.status(400).json({
+            message: "Please provide a valid PDF URL"
+        });
+    }
+}
+
+if (resourceType === "link") {
+    if (
+        youtubeRegex.test(url) ||
+        pdfRegex.test(url)
+    ) {
+        return res.status(400).json({
+            message:
+                "Please select the correct resource type for this URL"
+        });
+    }
+}
 
     const post = await Post.create({
         title,

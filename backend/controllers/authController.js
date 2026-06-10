@@ -9,8 +9,19 @@ try {
     if (!username || !email || !password) {
         return res.status(400).json({
             message: "All fields are required"
-    });
-}
+        });
+    }
+
+    // Password validation
+    const passwordRegex =
+        /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>_\-\\[\]\/])[A-Za-z\d!@#$%^&*(),.?":{}|<>_\-\\[\]\/]{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+            message:
+                "Password must be at least 8 characters long, include 1 uppercase letter, 1 number, and 1 special character"
+        });
+    }
 
     const existingUser = await User.findOne({ email });
 
@@ -22,10 +33,13 @@ try {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const avatar = `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${username}`;
+
     const user = await User.create({
         username,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        avatar
     });
 
     res.status(201).json({
@@ -85,7 +99,13 @@ try {
     });
 
     res.status(200).json({
-        message: "Login successful"
+        message: "Login successful",
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            avatar: user.avatar
+        }
     });
 
 } catch (error) {
